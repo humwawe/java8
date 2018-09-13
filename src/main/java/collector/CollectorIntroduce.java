@@ -12,29 +12,6 @@ import static java.util.stream.Collectors.groupingBy;
  * @author hum
  */
 public class CollectorIntroduce {
-
-    public static void main(String[] args) {
-        List<Apple> list = Arrays.asList(new Apple("green", 1)
-                , new Apple("yellow", 2)
-                , new Apple("green", 3)
-                , new Apple("green", 4)
-                , new Apple("yellow", 5)
-                , new Apple("green", 6));
-
-        List<Apple> greenList = list.stream().filter(a -> "green".equals(a.getColor())).collect(Collectors.toList());
-        Optional.ofNullable(greenList).ifPresent(System.out::println);
-
-        System.out.println("===================================================");
-        Optional.ofNullable(groupByNormal(list)).ifPresent(System.out::println);
-        Optional.ofNullable(groupByNormal1(list)).ifPresent(System.out::println);
-
-        System.out.println("===================================================");
-        Optional.ofNullable(groupByFunction(list)).ifPresent(System.out::println);
-
-        System.out.println("===================================================");
-        Optional.ofNullable(groupByCollector(list)).ifPresent(System.out::println);
-    }
-
     private static Map<String, List<Apple>> groupByNormal(List<Apple> apples) {
         Map<String, List<Apple>> map = new HashMap<>();
         for (Apple a : apples) {
@@ -74,4 +51,28 @@ public class CollectorIntroduce {
     private static Map<String, List<Apple>> groupByCollector(List<Apple> apples) {
         return apples.parallelStream().collect(groupingBy(Apple::getColor));
     }
+
+    public static void main(String[] args) {
+        List<Apple> list = Arrays.asList(new Apple("green", 1)
+                , new Apple("yellow", 2)
+                , new Apple("green", 3)
+                , new Apple("green", 4)
+                , new Apple("yellow", 5)
+                , new Apple("green", 6));
+
+        List<Apple> greenList = list.stream().filter(a -> "green".equals(a.getColor())).collect(Collectors.toList());
+        Optional.ofNullable(greenList).ifPresent(System.out::println);
+
+        System.out.println("===================================================");
+        Optional.ofNullable(groupByNormal(list)).ifPresent(System.out::println);
+        Optional.ofNullable(groupByNormal1(list)).ifPresent(System.out::println);
+
+        System.out.println("===================================================");
+        Optional.ofNullable(groupByFunction(list)).ifPresent(System.out::println);
+
+        System.out.println("===================================================");
+        Optional.ofNullable(groupByCollector(list)).ifPresent(System.out::println);
+    }
+
+
 }
