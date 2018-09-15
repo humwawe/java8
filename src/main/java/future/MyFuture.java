@@ -1,0 +1,78 @@
+package future;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
+
+/**
+ * @author hum
+ */
+public class MyFuture {
+    private interface Future<T> {
+
+        T get();
+
+        boolean isDone();
+    }
+
+    private interface Callable<T> {
+        T action();
+    }
+
+    private static <T> Future<T> invoke(Callable<T> callable) {
+        AtomicReference<T> result = new AtomicReference<>();
+        AtomicBoolean finished = new AtomicBoolean(false);
+
+        Thread t = new Thread(() -> {
+            T value = callable.action();
+            result.set(value);
+            finished.set(true);
+        });
+        t.start();
+
+        return new Future<T>() {
+            @Override
+            public T get() {
+                return result.get();
+            }
+
+            @Override
+            public boolean isDone() {
+                return finished.get();
+            }
+        };
+    }
+
+    private static <T> T block(Callable<T> callable) {
+        return callable.action();
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        Future<String> future = invoke(() -> {
+            try {
+                Thread.sleep(1000);
+                return "I am finished.";
+            } catch (InterruptedException e) {
+                return "Error";
+            }
+        });
+        System.out.println(future.get());
+        System.out.println(future.get());
+
+        while (!future.isDone()) {
+            Thread.sleep(10);
+        }
+        System.out.println(future.get());
+
+        String value = block(() -> {
+            try {
+                Thread.sleep(1000);
+                return "I am finished.";
+            } catch (InterruptedException e) {
+                return "Error";
+            }
+        });
+        System.out.println(value);
+    }
+
+}
